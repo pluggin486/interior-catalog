@@ -6,7 +6,7 @@
   "outputDirectory": "apps/web/dist",
   "functions": { "api/**/*.ts": { "maxDuration": 30 } },
   "routes": [
-    { "src": "/health/ready", "dest": "/api/health/ready" },
+    { "src": "/health/ready", "dest": "/api/[...route]" },
     { "src": "/api/(.*)", "dest": "/api/[...route]" },
     { "handle": "filesystem" },
     { "src": "/.*", "dest": "/index.html" }
