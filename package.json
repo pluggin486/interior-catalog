@@ -1,0 +1,20 @@
+{
+  "name": "interior-demo",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "frontend:dev": "npm --prefix frontend run dev",
+    "frontend:check": "npm --prefix frontend run type-check && npm --prefix frontend test",
+    "frontend:build": "npm --prefix frontend run build",
+    "backend:build": "dotnet build backend/InteriorStudio.Api/InteriorStudio.Api.csproj",
+    "backend:run": "sh -c 'set -a; . ./.env; set +a; dotnet run --project backend/InteriorStudio.Api'",
+    "database:up": "docker compose up -d postgres",
+    "database:down": "docker compose down",
+    "verify": "npm run frontend:check && npm run frontend:build && npm run backend:build"
+  },
+  "dependencies": {
+    "vitest": "4.1.12",
+    "vue": "3.5.44"
+  }
+}
