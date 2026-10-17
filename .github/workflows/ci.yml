@@ -1,0 +1,40 @@
+name: Verify
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      NX_DAEMON: 'false'
+      DATABASE_URL: postgresql://interior_demo:ci_demo_password@127.0.0.1:5432/postgres
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: interior_demo
+          POSTGRES_PASSWORD: ci_demo_password
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U interior_demo"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 }
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - name: Check affected projects
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
+            pnpm exec nx affected -t type-check,test,build --base="$BASE_SHA" --head=HEAD --output-style=static
+          else
+            pnpm verify
+          fi
+      - run: pnpm test:integration
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
+      - run: pnpm audit

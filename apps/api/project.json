@@ -1,0 +1,68 @@
+{
+  "name": "api",
+  "projectType": "application",
+  "sourceRoot": "apps/api/src",
+  "tags": ["scope:backend"],
+  "implicitDependencies": ["contracts"],
+  "namedInputs": {
+    "default": [
+      "{projectRoot}/**/*",
+      "{workspaceRoot}/api/**/*.ts",
+      "{workspaceRoot}/vercel.json",
+      "{workspaceRoot}/tsconfig.json",
+      "sharedGlobals"
+    ]
+  },
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p apps/api/tsconfig.json"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "tsc -p apps/api/tsconfig.json --noEmit && tsc -p tsconfig.json"
+      },
+      "inputs": [
+        "default",
+        "^default",
+        "{workspaceRoot}/tools/**/*.ts",
+        "{workspaceRoot}/tests/e2e/**/*.ts",
+        "{workspaceRoot}/playwright.config.ts"
+      ]
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "cache": false,
+      "continuous": true,
+      "options": {
+        "command": "node --env-file-if-exists=.env --import tsx --watch apps/api/src/server.ts"
+      }
+    },
+    "migrate": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "cache": false,
+      "options": {
+        "command": "node --env-file-if-exists=.env --import tsx apps/api/src/migrate-cli.ts"
+      }
+    },
+    "test-integration": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "cache": false,
+      "options": {
+        "command": "vitest run --config apps/api/vitest.integration.config.ts"
+      }
+    },
+    "test": {
+      "options": {
+        "command": "vitest run"
+      }
+    }
+  }
+}

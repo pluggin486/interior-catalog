@@ -1,0 +1,10 @@
+packages:
+  - apps/*
+  - libs/*
+allowBuilds:
+  nx: true
+  esbuild: true
+  vue-demi: true
+  core-js-pure: false
+overrides:
+  undici@7.29.0: 7.29.1

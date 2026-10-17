@@ -1,0 +1,44 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "defaultBase": "main",
+  "plugins": [
+    {
+      "plugin": "@nx/vitest",
+      "options": {
+        "testTargetName": "test"
+      }
+    }
+  ],
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "sharedGlobals": [
+      "{workspaceRoot}/tsconfig.base.json",
+      "{workspaceRoot}/pnpm-lock.yaml",
+      "{workspaceRoot}/package.json",
+      "{workspaceRoot}/pnpm-workspace.yaml"
+    ],
+    "production": ["default", "!{projectRoot}/**/*.test.ts", "!{projectRoot}/vitest*.config.ts"]
+  },
+  "targetDefaults": {
+    "build": {
+      "dependsOn": ["^build"],
+      "cache": true,
+      "inputs": ["production", "^production"],
+      "outputs": ["{projectRoot}/dist"]
+    },
+    "type-check": {
+      "dependsOn": ["^build"],
+      "cache": true,
+      "inputs": ["default", "^default"]
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "cache": true,
+      "inputs": ["default", "^default"]
+    }
+  },
+  "tui": {
+    "enabled": false
+  },
+  "analytics": true
+}

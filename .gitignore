@@ -7,3 +7,10 @@ coverage/
 .vscode/
 .idea/
 .DS_Store
+.nx/
+.pnpm-store/
+.vercel/
+playwright-report/
+test-results/
+.env.*
+!.env.example

@@ -1,0 +1,47 @@
+{
+  "name": "web",
+  "projectType": "application",
+  "sourceRoot": "apps/web/src",
+  "tags": ["scope:frontend"],
+  "implicitDependencies": ["contracts"],
+  "targets": {
+    "start": {
+      "executor": "nx:run-commands",
+      "dependsOn": [{ "projects": ["api"], "target": "dev" }],
+      "cache": false,
+      "continuous": true,
+      "options": {
+        "command": "node --import tsx tools/wait-for-api.ts && pnpm exec vite apps/web"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build", "type-check"],
+      "options": {
+        "command": "vite build",
+        "cwd": "apps/web"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vue-tsc --noEmit -p apps/web/tsconfig.json"
+      }
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "cache": false,
+      "continuous": true,
+      "options": {
+        "command": "vite",
+        "cwd": "apps/web"
+      }
+    },
+    "test": {
+      "options": {
+        "command": "vitest run"
+      }
+    }
+  }
+}

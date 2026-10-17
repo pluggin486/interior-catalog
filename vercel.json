@@ -1,0 +1,14 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "regions": ["fra1"],
+  "buildCommand": "pnpm build",
+  "outputDirectory": "apps/web/dist",
+  "functions": { "api/**/*.ts": { "maxDuration": 30 } },
+  "routes": [
+    { "src": "/health/ready", "dest": "/api/health/ready" },
+    { "src": "/api/(.*)", "dest": "/api/[...route]" },
+    { "handle": "filesystem" },
+    { "src": "/.*", "dest": "/index.html" }
+  ]
+}

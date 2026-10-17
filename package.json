@@ -1,20 +1,48 @@
 {
-  "name": "interior-demo",
+  "name": "interior-catalog",
   "private": true,
-  "version": "1.0.0",
   "type": "module",
+  "packageManager": "pnpm@11.5.3",
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
-    "frontend:dev": "npm --prefix frontend run dev",
-    "frontend:check": "npm --prefix frontend run type-check && npm --prefix frontend test",
-    "frontend:build": "npm --prefix frontend run build",
-    "backend:build": "dotnet build backend/InteriorStudio.Api/InteriorStudio.Api.csproj",
-    "backend:run": "sh -c 'set -a; . ./.env; set +a; dotnet run --project backend/InteriorStudio.Api'",
-    "database:up": "docker compose up -d postgres",
-    "database:down": "docker compose down",
-    "verify": "npm run frontend:check && npm run frontend:build && npm run backend:build"
+    "start": "pnpm run db:up && pnpm run db:migrate && nx run web:start --output-style=static",
+    "dev": "nx run-many -t dev -p web,api --parallel=2 --output-style=static",
+    "dev:web": "nx run web:dev --output-style=static",
+    "dev:api": "nx run api:dev --output-style=static",
+    "build": "nx run-many -t build --output-style=static",
+    "type-check": "nx run-many -t type-check --output-style=static",
+    "test": "nx run-many -t test --output-style=static",
+    "verify": "nx run-many -t type-check,test,build --output-style=static",
+    "test:integration": "node --env-file-if-exists=.env --import tsx tools/test-db.ts integration",
+    "test:e2e": "nx run contracts:build --output-style=static && node --env-file-if-exists=.env --import tsx tools/test-db.ts e2e",
+    "db:up": "docker compose up -d --wait postgres",
+    "db:down": "docker compose down",
+    "db:migrate": "nx run api:migrate",
+    "database:up": "pnpm run db:up",
+    "database:down": "pnpm run db:down",
+    "format": "prettier --write . --ignore-path .gitignore"
   },
   "dependencies": {
+    "@interior/api": "workspace:*"
+  },
+  "devDependencies": {
+    "nx": "23.3.0",
+    "@nx/vitest": "23.3.0",
+    "@nx/eslint": "23.3.0",
+    "typescript": "5.8.3",
+    "vite": "8.2.2",
     "vitest": "4.1.12",
-    "vue": "3.5.44"
+    "@vitejs/plugin-vue": "6.0.7",
+    "@vue/test-utils": "2.4.11",
+    "happy-dom": "20.10.6",
+    "vue-tsc": "2.2.12",
+    "@types/node": "24.19.2",
+    "@types/pg": "8.23.1",
+    "tsx": "4.23.15",
+    "@playwright/test": "1.64.1",
+    "pg": "8.23.1",
+    "prettier": "3.9.10"
   }
 }
